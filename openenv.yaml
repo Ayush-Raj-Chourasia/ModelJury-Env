@@ -45,8 +45,12 @@ reward:
   range: [0.0, 1.0]
   description: Partial credit at each scoring dimension — not just binary success/failure
 
+api:
+  base_url: "https://alphacalculus-modeljury-env.hf.space"
+
 endpoints:
   reset: POST /reset
   step: POST /step
+  state: GET /state/{session_id}
   state: GET /state/{session_id}
   health: GET /health
