@@ -1,3 +1,16 @@
+---
+title: ModelJury-Env
+emoji: ⚖️
+colorFrom: blue
+colorTo: pink
+sdk: docker
+app_port: 7860
+tags:
+  - openenv
+  - rlhf
+  - llm-evaluation
+---
+
 # ModelJury-Env
 
 **An OpenEnv environment where AI agents learn to evaluate other AI models.**
