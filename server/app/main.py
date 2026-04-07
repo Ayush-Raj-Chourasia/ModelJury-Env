@@ -30,7 +30,12 @@ _sessions: Dict[str, ModelJuryEnv] = {}
 
 
 class ResetRequest(BaseModel):
-    task_type: str = "hallucination"
+    """Reset payload compatible with OpenEnv validators.
+
+    Accepts either `task_type` (preferred) or `task` (compat alias).
+    """
+    task_type: Optional[str] = None
+    task: Optional[str] = None
     scenario_id: Optional[str] = None
     session_id: Optional[str] = None
     seed: Optional[int] = None
@@ -66,14 +71,15 @@ def health():
 
 
 @app.post("/reset", response_model=ResetResponse)
-def reset(req_data: dict = Body(default=None)):
-    """Start a new episode. Returns the first observation."""
-    if req_data is None:
-        req = ResetRequest()
-    else:
-        req = ResetRequest(**req_data)
-        
-    if req.task_type not in ("hallucination", "reasoning", "ranking"):
+def reset(req: Optional[ResetRequest] = Body(default=None)):
+    """Start a new episode. Returns the first observation.
+
+    Works with empty POST bodies to satisfy automated validators.
+    """
+    req = req or ResetRequest()
+    task_type = req.task_type or req.task or "hallucination"
+
+    if task_type not in ("hallucination", "reasoning", "ranking"):
         raise HTTPException(
             status_code=400,
             detail="task_type must be 'hallucination', 'reasoning', or 'ranking'",
@@ -83,7 +89,7 @@ def reset(req_data: dict = Body(default=None)):
     env = ModelJuryEnv(seed=req.seed)
     _sessions[session_id] = env
 
-    obs = env.reset(task_type=req.task_type, scenario_id=req.scenario_id)
+    obs = env.reset(task_type=task_type, scenario_id=req.scenario_id)
     return ResetResponse(session_id=session_id, observation=obs)
 
 

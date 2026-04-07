@@ -92,19 +92,23 @@ echo ""
 echo "📍 Check 3: Docker Build & Runtime"
 echo ""
 
-if docker build -t "$IMAGE_TAG" . >/dev/null 2>&1; then
-  pass "Docker image built successfully"
-else
-  fail "Docker build failed"
-fi
+if command -v docker >/dev/null 2>&1; then
+  if docker build -t "$IMAGE_TAG" . >/dev/null 2>&1; then
+    pass "Docker image built successfully"
+  else
+    fail "Docker build failed"
+  fi
 
-docker run -d --rm --name "$CONTAINER_NAME" -p 7860:7860 "$IMAGE_TAG" >/dev/null 2>&1
-sleep 4
+  docker run -d --rm --name "$CONTAINER_NAME" -p 7860:7860 "$IMAGE_TAG" >/dev/null 2>&1
+  sleep 4
 
-if curl -fsS http://localhost:7860/health >/dev/null 2>&1; then
-  pass "Docker container started and /health responds on port 7860"
+  if curl -fsS http://localhost:7860/health >/dev/null 2>&1; then
+    pass "Docker container started and /health responds on port 7860"
+  else
+    fail "Container did not respond on /health"
+  fi
 else
-  fail "Container did not respond on /health"
+  warn "Docker not installed; skipped Docker build/run checks"
 fi
 
 echo ""
