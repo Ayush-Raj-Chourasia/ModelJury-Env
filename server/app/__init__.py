@@ -3,3 +3,8 @@ from .models import ModelJuryAction, ModelJuryObservation, ModelJuryReward, Mode
 from .env import ModelJuryEnv
 from .grader import grade
 from .scenarios import get_scenarios
+
+try:
+    from .main import app, main, run_server
+except ImportError:
+    pass
