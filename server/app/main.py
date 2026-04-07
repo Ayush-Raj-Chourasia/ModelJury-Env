@@ -66,8 +66,11 @@ def health():
 
 
 @app.post("/reset", response_model=ResetResponse)
-def reset(req: ResetRequest):
+def reset(req: Optional[ResetRequest] = None):
     """Start a new episode. Returns the first observation."""
+    if req is None:
+        req = ResetRequest()
+        
     if req.task_type not in ("hallucination", "reasoning", "ranking"):
         raise HTTPException(
             status_code=400,
