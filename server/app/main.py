@@ -133,3 +133,13 @@ def root():
         "docs": "/docs",
         "health": "/health",
     }
+
+
+def main() -> None:
+    """Console entrypoint for local/OpenEnv multi-mode server startup."""
+    import uvicorn
+    uvicorn.run("server.app.main:app", host="0.0.0.0", port=7860)
+
+def run_server() -> None:
+    """Fallback alias."""
+    main()
