@@ -52,5 +52,4 @@ endpoints:
   reset: POST /reset
   step: POST /step
   state: GET /state/{session_id}
-  state: GET /state/{session_id}
   health: GET /health
