@@ -42,4 +42,8 @@ logs/
 .mypy_cache/
 *.zip
 *.pdf
-*.txt
+# .txt files EXCEPT requirements and important docs
+hackathon*.txt
+meta_*.txt
+project_desc.txt
+Hackathon*.txt
