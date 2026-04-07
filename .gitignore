@@ -1,49 +1,167 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg-info/
-*.egg
-dist/
-build/
-.eggs/
-
-# Virtual environments
-venv/
-env/
-.venv/
-.env
-.env.*
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
+# ==========================================
+# OS FILES
+# ==========================================
 .DS_Store
 Thumbs.db
 desktop.ini
 
-# Testing
-.pytest_cache/
+# ==========================================
+# EDITORS / IDEs
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ==========================================
+# ENVIRONMENTS / SECRETS
+# ==========================================
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+ENV/
+
+# ==========================================
+# PYTHON
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+pip-wheel-metadata/
 htmlcov/
 .coverage
+.coverage.*
 .tox/
-
-# Logs
-*.log
-outputs/
-logs/
-
-# Misc
+.nox/
+.pytest_cache/
+.hypothesis/
 .mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+
+# ==========================================
+# NODE / FRONTEND
+# ==========================================
+node_modules/
+coverage/
+.npm/
+.pnpm-store/
+.yarn/
+.yarn-cache/
+.next/
+.nuxt/
+.svelte-kit/
+dist/
+vite.svg
+*.tsbuildinfo
+
+# ==========================================
+# JAVA / KOTLIN / GRADLE
+# ==========================================
+.gradle/
+build/
+out/
+*.class
+
+# ==========================================
+# GO
+# ==========================================
+bin/
+*.test
+
+# ==========================================
+# RUST
+# ==========================================
+target/
+Cargo.lock
+
+# ==========================================
+# RUNTIME / LOGS
+# ==========================================
+*.log
+logs/
+*.tmp
+*.bak
+tmp/
+temp/
+.temp
+
+# ==========================================
+# DATABASES
+# ==========================================
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite3-journal
+
+# ==========================================
+# BACKUP / ARCHIVE
+# ==========================================
 *.zip
-*.pdf
-# .txt files EXCEPT requirements and important docs
-hackathon*.txt
-meta_*.txt
-project_desc.txt
-Hackathon*.txt
+*.tar
+*.gz
+*.rar
+*.7z
+
+# ==========================================
+# TEST OUTPUT
+# ==========================================
+test_output.txt
+test_logs/
+*.cover
+coverage.xml
+nosetests.xml
+
+# ==========================================
+# JUPYTER
+# ==========================================
+.ipynb_checkpoints/
+
+# ==========================================
+# DEPLOY / BUILD ARTIFACTS
+# ==========================================
+staticfiles/
+media/
+site/
+public/build/
+
+# ==========================================
+# SECRETS / CREDENTIALS
+# ==========================================
+*.key
+*.pem
+*.crt
+*.cer
+credentials.json
+secrets.json
+secrets/
+.aws/
+
+# ==========================================
+# INTERNAL DOCUMENTATION
+# ==========================================
+SUBMISSION_*.md
+PROJECT_COMPLETION_REPORT.md
