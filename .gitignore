@@ -1,31 +1,16 @@
 # ==========================================
-# OS FILES
+# ENVIRONMENT & VIRTUAL ENV
 # ==========================================
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# ==========================================
-# EDITORS / IDEs
-# ==========================================
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-*.sublime-project
-*.sublime-workspace
-
-# ==========================================
-# ENVIRONMENTS / SECRETS
-# ==========================================
-.env
-.env.*
-!.env.example
-.venv/
 venv/
 env/
 ENV/
+.env
+.env.local
+.env.*.local
+.venv
+
+
+
 
 # ==========================================
 # PYTHON
@@ -33,76 +18,115 @@ ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 .Python
 build/
-dist/
 develop-eggs/
+dist/
 downloads/
 eggs/
 .eggs/
 lib/
+!thredion-dashboard/src/lib/
 lib64/
 parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-pip-wheel-metadata/
-htmlcov/
-.coverage
-.coverage.*
-.tox/
-.nox/
-.pytest_cache/
-.hypothesis/
-.mypy_cache/
-.dmypy.json
-.pyre/
-.pytype/
+MANIFEST
 
 # ==========================================
-# NODE / FRONTEND
+# DATABASE
+# ==========================================
+db.sqlite3
+db.sqlite3-journal
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================
+# IDE & EDITOR
+# ==========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+
+# ==========================================
+# NODE & FRONTEND
 # ==========================================
 node_modules/
-coverage/
-.npm/
-.pnpm-store/
-.yarn/
-.yarn-cache/
-.next/
-.nuxt/
-.svelte-kit/
-dist/
-vite.svg
-*.tsbuildinfo
+npm-debug.log
+yarn-error.log
+package-lock.json
 
 # ==========================================
-# JAVA / KOTLIN / GRADLE
+# TESTING
 # ==========================================
-.gradle/
-build/
-out/
-*.class
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+test_output.txt
+test_logs/
+TEST_RESULTS.json
+MODEL_TEST_RESULTS.json
+test_*.json
 
 # ==========================================
-# GO
+# DOCUMENTATION (Keep README.md only)
 # ==========================================
-bin/
-*.test
+*.md
+!README.md
+!docs/**/*.md
 
 # ==========================================
-# RUST
+# JUPYTER NOTEBOOKS
 # ==========================================
-target/
-Cargo.lock
+.ipynb_checkpoints
+*.ipynb
+!docs/**/*.ipynb
 
 # ==========================================
-# RUNTIME / LOGS
+# OS FILES
+# ==========================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# ==========================================
+# LOGS
 # ==========================================
 *.log
 logs/
+
+# ==========================================
+# DJANGO
+# ==========================================
+local_settings.py
+/media
+/staticfiles
+
+# ==========================================
+# TEMPORARY FILES
+# ==========================================
 *.tmp
 *.bak
 tmp/
@@ -110,58 +134,61 @@ temp/
 .temp
 
 # ==========================================
-# DATABASES
-# ==========================================
-*.db
-*.sqlite
-*.sqlite3
-*.sqlite3-journal
-
-# ==========================================
-# BACKUP / ARCHIVE
-# ==========================================
-*.zip
-*.tar
-*.gz
-*.rar
-*.7z
-
-# ==========================================
-# TEST OUTPUT
-# ==========================================
-test_output.txt
-test_logs/
-*.cover
-coverage.xml
-nosetests.xml
-
-# ==========================================
-# JUPYTER
-# ==========================================
-.ipynb_checkpoints/
-
-# ==========================================
-# DEPLOY / BUILD ARTIFACTS
-# ==========================================
-staticfiles/
-media/
-site/
-public/build/
-
-# ==========================================
-# SECRETS / CREDENTIALS
+# CREDENTIALS & SECRETS
 # ==========================================
 *.key
 *.pem
-*.crt
-*.cer
 credentials.json
 secrets.json
-secrets/
 .aws/
+.env.production
+.env.development
 
 # ==========================================
-# INTERNAL DOCUMENTATION
+# BUILD OUTPUTS
 # ==========================================
-SUBMISSION_*.md
-PROJECT_COMPLETION_REPORT.md
+/dist
+/build
+*.whl
+
+# ==========================================
+# MISC
+# ==========================================
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.python-version
+.ruby-version
+.nvmrc
+_pycache/
+*.pickle
+*.pkl
+docs
+*.md
+!README.md
+
+.env
+.env*
+secrets/
+*.secret
+auth_info/
+bot/auth_info/
+*.log
+*.sqlite
+migrate_*.py
+test_*.py
+seed_*.py
+insert_db_user.py
+inspect_db*.py
+prepare_deploy.py
+deploy_*.py
+smoke_test*.log
+walkthrough.md
+*.zip
+*.pdf
+deploy_temp/
+tmp/
+temp/
+*.txt
+.kiro
+.vercel
