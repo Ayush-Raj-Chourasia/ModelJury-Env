@@ -1,0 +1,52 @@
+name: modeljury-env
+version: "0.1.0"
+description: >
+  An OpenEnv environment where AI agents learn to evaluate other LLMs.
+  Agents practice hallucination detection, reasoning error localization,
+  and comparative response ranking — the core skills of RLHF annotation.
+author: Ayush Raj Chourasia
+tags:
+  - openenv
+  - real-world
+  - llm-evaluation
+  - hallucination
+  - rlhf
+  - meta-evaluation
+
+tasks:
+  - name: hallucination
+    description: Detect which of 3 LLM responses contains a factual error
+    difficulty: easy
+    max_steps: 1
+    score_range: [0.0, 1.0]
+
+  - name: reasoning
+    description: Identify the exact step where chain-of-thought reasoning breaks down
+    difficulty: medium
+    max_steps: 1
+    score_range: [0.0, 1.0]
+
+  - name: ranking
+    description: Rank 5 LLM responses by quality and write an evaluation rubric
+    difficulty: hard
+    max_steps: 1
+    score_range: [0.0, 1.0]
+
+action_space:
+  type: structured
+  schema: ModelJuryAction
+
+observation_space:
+  type: structured
+  schema: ModelJuryObservation
+
+reward:
+  type: dense
+  range: [0.0, 1.0]
+  description: Partial credit at each scoring dimension — not just binary success/failure
+
+endpoints:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state/{session_id}
+  health: GET /health
