@@ -10,7 +10,7 @@ Endpoints:
 """
 import uuid
 from typing import Dict, Optional
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 
 from .env import ModelJuryEnv
@@ -66,10 +66,12 @@ def health():
 
 
 @app.post("/reset", response_model=ResetResponse)
-def reset(req: Optional[ResetRequest] = None):
+def reset(req_data: dict = Body(default=None)):
     """Start a new episode. Returns the first observation."""
-    if req is None:
+    if req_data is None:
         req = ResetRequest()
+    else:
+        req = ResetRequest(**req_data)
         
     if req.task_type not in ("hallucination", "reasoning", "ranking"):
         raise HTTPException(
