@@ -9,9 +9,13 @@ description = "An OpenEnv environment where AI agents learn to evaluate other LL
 authors = [{name = "Ayush Raj Chourasia"}]
 requires-python = ">=3.10"
 dependencies = [
+    "openenv-core>=0.2.0",
     "fastapi>=0.104.0",
     "uvicorn>=0.24.0",
     "pydantic>=2.0.0",
     "openai>=1.0.0",
     "requests>=2.31.0",
 ]
+
+[project.scripts]
+server = "server.app.main:start"
