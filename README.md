@@ -113,7 +113,7 @@ pip install openenv-core openai requests fastapi uvicorn pydantic
 ```bash
 # Start the server
 cd server
-uvicorn app.main:app --host 0.0.0.0 --port 8000
+uvicorn app.main:app --host 0.0.0.0 --port 7860
 
 # In another terminal, run inference
 export HF_TOKEN=your_token
@@ -125,8 +125,8 @@ python inference.py
 ## Docker
 
 ```bash
-docker build -t modeljury-env -f server/Dockerfile .
-docker run -p 8000:8000 modeljury-env
+docker build -t modeljury-env .
+docker run -p 7860:7860 modeljury-env
 ```
 
 ## Deploying to Hugging Face Spaces
@@ -145,3 +145,32 @@ Training agents to evaluate other models is a critical bottleneck in AI developm
 4. **Model improvement feedback loops**: The ranking task trains agents that can guide model improvement
 
 This environment directly addresses the core challenge that Meta and Hugging Face face in building better LLMs.
+
+## Submission hard-check checklist (real, no mockups)
+
+This repository includes a validator script that runs the same gate checks expected in Round 1:
+
+```bash
+./scripts/validate-submission.sh https://your-space.hf.space
+```
+
+It verifies:
+
+1. HF Space is live and `/reset` responds
+2. `openenv.yaml` + root `inference.py` exist, and `openenv validate` (if installed)
+3. Docker image builds and container responds on `/health`
+4. All 3 tasks execute with deterministic graders and rewards in `[0.0, 1.0]`
+5. Required inference env vars are configured (`API_BASE_URL`, `MODEL_NAME`, `HF_TOKEN`)
+
+To run the validator locally:
+
+```bash
+chmod +x scripts/validate-submission.sh
+./scripts/validate-submission.sh http://localhost:7860
+```
+
+Or against your live HF Space:
+
+```bash
+./scripts/validate-submission.sh https://huggingface.co/spaces/your-username/modeljury-env
+```
