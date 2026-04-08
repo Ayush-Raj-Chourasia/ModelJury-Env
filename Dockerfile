@@ -1,3 +1,4 @@
+# UTF-8 Explicit Encoding
 FROM python:3.11-slim
 
 WORKDIR /app
