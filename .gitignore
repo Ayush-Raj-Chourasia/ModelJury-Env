@@ -190,5 +190,7 @@ deploy_temp/
 tmp/
 temp/
 *.txt
+!requirements.txt
+!server/requirements.txt
 .kiro
 .vercel
