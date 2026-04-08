@@ -5,6 +5,12 @@ Ground truth is pre-defined in scenario data.
 from typing import Dict, Any
 
 
+
+def clamp_score(score: float) -> float:
+    """Ensure score is strictly between 0 and 1 (exclusive) for the validator."""
+    return max(0.01, min(0.99, round(score, 3)))
+
+
 def grade_hallucination(action: dict, ground_truth: dict) -> Dict[str, Any]:
     """
     Score hallucination detection task. Max = 1.0.
@@ -49,7 +55,7 @@ def grade_hallucination(action: dict, ground_truth: dict) -> Dict[str, Any]:
         feedback_parts.append("Explanation too brief.")
 
     return {
-        "score": round(min(1.0, score), 3),
+        "score": clamp_score(score),
         "breakdown": breakdown,
         "feedback": " ".join(feedback_parts),
         "correct": action.get("answer_index") == correct_idx,
@@ -104,7 +110,7 @@ def grade_reasoning_error(action: dict, ground_truth: dict) -> Dict[str, Any]:
     feedback_parts.append(f"Explanation matched {hits}/{len(keywords)} key concepts.")
 
     return {
-        "score": round(min(1.0, score), 3),
+        "score": clamp_score(score),
         "breakdown": breakdown,
         "feedback": " ".join(feedback_parts),
         "correct": agent_step == correct_step,
@@ -185,7 +191,7 @@ def grade_ranking(action: dict, ground_truth: dict) -> Dict[str, Any]:
     )
 
     return {
-        "score": round(min(1.0, score), 3),
+        "score": clamp_score(score),
         "breakdown": breakdown,
         "feedback": " ".join(feedback_parts),
         "correct": (breakdown["ranking_correlation"] >= 0.35),
