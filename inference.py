@@ -25,14 +25,17 @@ from openai import OpenAI
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
-API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
-ENV_BASE_URL = os.getenv("ENV_BASE_URL") or "http://localhost:7860"
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+ENV_BASE_URL = os.getenv("ENV_BASE_URL", "http://localhost:7860")
 BENCHMARK = "modeljury-env"
 MAX_STEPS = 1
 TEMPERATURE = 0.1
 MAX_TOKENS = 800
 SUCCESS_SCORE_THRESHOLD = 0.4
+
+if API_KEY is None:
+    raise ValueError("HF_TOKEN environment variable is required")
 
 client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
 
@@ -55,7 +58,7 @@ def log_step(step: int, action: str, reward: float, done: bool, error: Optional[
 def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> None:
     rewards_str = ",".join(f"{r:.2f}" for r in rewards)
     print(
-        f"[END] success={str(success).lower()} steps={steps} score={score:.3f} rewards={rewards_str}",
+        f"[END] success={str(success).lower()} steps={steps} score={score:.2f} rewards={rewards_str}",
         flush=True,
     )
 
@@ -63,6 +66,7 @@ def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> No
 # ── Environment HTTP helpers ───────────────────────────────────────────────────
 
 def env_reset(task_type: str) -> dict:
+    """Reset the environment for a given task type via HTTP."""
     resp = requests.post(
         f"{ENV_BASE_URL}/reset",
         json={"task_type": task_type},
@@ -72,10 +76,11 @@ def env_reset(task_type: str) -> dict:
     return resp.json()
 
 
-def env_step(session_id: str, action: dict) -> dict:
+def env_step(action: dict) -> dict:
+    """Take a step in the environment via HTTP."""
     resp = requests.post(
         f"{ENV_BASE_URL}/step",
-        json={"session_id": session_id, "action": action},
+        json=action,
         timeout=30,
     )
     resp.raise_for_status()
@@ -129,10 +134,11 @@ SYSTEM_PROMPTS = {
 
 
 def build_user_prompt(observation: dict) -> str:
-    task_type = observation["task_type"]
-    question = observation["question"]
-    instructions = observation["instructions"]
-    responses = observation["responses"]
+    """Build user prompt from observation data."""
+    task_type = observation.get("task_type", "")
+    question = observation.get("question", "")
+    instructions = observation.get("instructions", "")
+    responses = observation.get("responses", [])
 
     parts = [f"Instructions: {instructions}", f"\nQuestion: {question}"]
 
@@ -149,6 +155,7 @@ def build_user_prompt(observation: dict) -> str:
 
 
 def call_llm(system_prompt: str, user_prompt: str) -> str:
+    """Call the LLM and return response text."""
     response = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
@@ -188,12 +195,11 @@ def run_task(task_type: str) -> float:
     rewards: List[float] = []
     final_score = 0.0
     step_num = 0
-    last_error = None
 
     try:
+        # Reset
         reset_data = env_reset(task_type)
-        session_id = reset_data["session_id"]
-        observation = reset_data["observation"]
+        observation = reset_data.get("observation", reset_data)
 
         for step_num in range(1, MAX_STEPS + 1):
             user_prompt = build_user_prompt(observation)
@@ -204,26 +210,40 @@ def run_task(task_type: str) -> float:
             action_str = json.dumps(action, separators=(",", ":"))
 
             try:
-                result = env_step(session_id, action)
-                reward = result["reward"]
-                done = result["done"]
-                observation = result["observation"]
+                result = env_step(action)
+
+                # Handle both flat and nested response formats
+                obs_data = result.get("observation", result)
+                reward = result.get("reward", obs_data.get("reward", 0.0))
+                done = result.get("done", obs_data.get("done", True))
+                error = obs_data.get("last_action_error") or result.get("error")
+
+                if reward is None:
+                    reward = obs_data.get("score", 0.0) or 0.0
+
                 final_score = reward
                 rewards.append(reward)
-                log_step(step=step_num, action=action_str, reward=reward, done=done, error=None)
+                log_step(step=step_num, action=action_str, reward=reward, done=done, error=error)
+
+                observation = obs_data
                 if done:
                     break
+
             except Exception as e:
-                last_error = str(e)
-                log_step(step=step_num, action=action_str, reward=0.0, done=True, error=last_error)
+                log_step(step=step_num, action=action_str, reward=0.0, done=True, error=str(e))
+                rewards.append(0.0)
                 break
 
     except Exception as e:
-        last_error = str(e)
-        log_step(step=step_num or 1, action="null", reward=0.0, done=True, error=last_error)
+        log_step(step=step_num or 1, action="null", reward=0.0, done=True, error=str(e))
+        if not rewards:
+            rewards.append(0.0)
 
-    success = final_score >= SUCCESS_SCORE_THRESHOLD
-    log_end(success=success, steps=len(rewards), score=final_score, rewards=rewards)
+    finally:
+        # [END] must ALWAYS be emitted, even on exception
+        success = final_score >= SUCCESS_SCORE_THRESHOLD
+        log_end(success=success, steps=len(rewards), score=final_score, rewards=rewards)
+
     return final_score
 
 
