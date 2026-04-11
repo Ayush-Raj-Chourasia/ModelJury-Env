@@ -1,8 +1,5 @@
-"""Proxy file to satisfy openenv static paths check."""
-from .app import main as backend_main
-
-def main() -> None:
-    backend_main.main()
+"""Proxy module — re-exports the FastAPI app for uvicorn."""
+from .app.main import app, main
 
 if __name__ == "__main__":
     main()
