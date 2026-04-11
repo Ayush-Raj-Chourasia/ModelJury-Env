@@ -80,7 +80,7 @@ def env_step(action: dict) -> dict:
     """Take a step in the environment via HTTP."""
     resp = requests.post(
         f"{ENV_BASE_URL}/step",
-        json=action,
+        json={"action": action},
         timeout=30,
     )
     resp.raise_for_status()
