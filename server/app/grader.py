@@ -7,8 +7,9 @@ from typing import Dict, Any
 
 
 def clamp_score(score: float) -> float:
-    """Ensure score is in [0.0, 1.0] range."""
-    return max(0.0, min(1.0, round(score, 4)))
+    """Ensure score falls strictly within (0, 1) per Phase 2 requirements."""
+    # Enforce strictly between 0 and 1 (not 0.0 and not 1.0)
+    return max(0.01, min(0.99, round(score, 4)))
 
 
 def grade_hallucination(action: dict, ground_truth: dict) -> Dict[str, Any]:
