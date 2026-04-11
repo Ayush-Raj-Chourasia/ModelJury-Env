@@ -63,30 +63,31 @@ def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> No
     )
 
 
-# ── Environment HTTP helpers ───────────────────────────────────────────────────
+# ── Environment WebSocket Session Client ────────────────────────────────────────
 
-session = requests.Session()
+import sys
+import os
+
+# Append current directory to import client
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from client import ModelJuryEnvClient
+from server.app.models import ModelJuryAction
+
+_env_client = ModelJuryEnvClient(base_url=ENV_BASE_URL).sync()
 
 def env_reset(task_type: str) -> dict:
-    """Reset the environment for a given task type via HTTP."""
-    resp = session.post(
-        f"{ENV_BASE_URL}/reset",
-        json={"task_type": task_type},
-        timeout=30,
-    )
-    resp.raise_for_status()
-    return resp.json()
+    """Reset the environment for a given task type via EnvClient."""
+    result = _env_client.reset(task_type=task_type, seed=42)
+    # Convert StepResult back to dict-like structure to preserve inference logic hook compatibility
+    return {"observation": result.observation.model_dump(), "done": result.done, "reward": result.reward}
 
 
 def env_step(action: dict) -> dict:
-    """Take a step in the environment via HTTP."""
-    resp = session.post(
-        f"{ENV_BASE_URL}/step",
-        json={"action": action},
-        timeout=30,
-    )
-    resp.raise_for_status()
-    return resp.json()
+    """Take a step in the environment via EnvClient."""
+    # Action dictionary -> ModelJuryAction type
+    typed_action = ModelJuryAction(**action)
+    result = _env_client.step(typed_action)
+    return {"observation": result.observation.model_dump(), "done": result.done, "reward": result.reward}
 
 
 # ── System prompts per task ────────────────────────────────────────────────────
@@ -219,6 +220,8 @@ def run_task(task_type: str) -> float:
                 reward = result.get("reward", obs_data.get("reward", 0.0))
                 done = result.get("done", obs_data.get("done", True))
                 error = obs_data.get("last_action_error") or result.get("error")
+                feedback = obs_data.get("feedback")
+                print(f"DEBUG: feedback={feedback}", flush=True)
 
                 if reward is None:
                     reward = obs_data.get("score", 0.0) or 0.0
