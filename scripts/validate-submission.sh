@@ -121,13 +121,13 @@ echo ""
 python - <<'PY'
 import sys
 sys.path.insert(0, '/c/Users/iters/Downloads/ModelJury-Env' if sys.platform == 'win32' else '.')
-from server.app.env import ModelJuryEnv
+from server.app.env import ModelJuryEnvironment
 from server.app.models import ModelJuryAction
 
 TASKS = ["hallucination", "reasoning", "ranking"]
 for task in TASKS:
-    env = ModelJuryEnv(seed=42)
-    obs = env.reset(task_type=task)
+    env = ModelJuryEnvironment()
+    obs = env.reset(task_type=task, seed=42)
     
     if task == "hallucination":
         action = ModelJuryAction(
@@ -150,10 +150,10 @@ for task in TASKS:
             best_response_explanation="basic ranking explanation"
         )
 
-    _, reward, done, _ = env.step(action)
-    assert done is True, f"{task}: Episode did not finish"
-    assert 0.0 <= reward.score <= 1.0, f"{task}: Score {reward.score} out of bounds"
-    print(f"✅ {task:15s}: score={reward.score:.3f} (deterministic, in bounds)")
+    obs = env.step(action)
+    assert obs.done is True, f"{task}: Episode did not finish"
+    assert 0.0 <= obs.score <= 1.0, f"{task}: Score {obs.score} out of bounds"
+    print(f"✅ {task:15s}: score={obs.score:.3f} (deterministic, in bounds)")
 
 print("\n✅ All 3 tasks execute with deterministic graders and bounded scores")
 PY
