@@ -65,9 +65,11 @@ def log_end(success: bool, steps: int, score: float, rewards: List[float]) -> No
 
 # ── Environment HTTP helpers ───────────────────────────────────────────────────
 
+session = requests.Session()
+
 def env_reset(task_type: str) -> dict:
     """Reset the environment for a given task type via HTTP."""
-    resp = requests.post(
+    resp = session.post(
         f"{ENV_BASE_URL}/reset",
         json={"task_type": task_type},
         timeout=30,
@@ -78,7 +80,7 @@ def env_reset(task_type: str) -> dict:
 
 def env_step(action: dict) -> dict:
     """Take a step in the environment via HTTP."""
-    resp = requests.post(
+    resp = session.post(
         f"{ENV_BASE_URL}/step",
         json={"action": action},
         timeout=30,
